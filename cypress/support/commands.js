@@ -35,3 +35,10 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add("loginToApplication", () => {
+  cy.visit("/login");
+  cy.get("[placeholder='Email']").type("adam@hotmail.com");
+  cy.get("[placeholder='Password']").type("Kdagaal123");
+  cy.get("form").submit();
+});
