@@ -19,8 +19,7 @@ describe("template spec", () => {
     cy.get('[formcontrolname="body"]').type("sheekooy sheeko xariira");
     cy.contains("Publish").click();
 
-    cy.wait("@postArticles");
-    cy.get("@postArticles").then((xhr) => {
+    cy.wait("@postArticles").then((xhr) => {
       console.log("=====>>>>>", xhr);
       expect(xhr.response.statusCode).to.equal(201);
       expect(xhr.request.body.article.body).to.equal("sheekooy sheeko xariira");
