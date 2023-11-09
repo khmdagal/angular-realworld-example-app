@@ -32,6 +32,11 @@ cy.intercept('GET','https://api.realworld.io/api/tags', {fixture: 'tags.json'})
   });
 
   it.only("intercepting with mock response", () => {
-    cy.log('===== log in ======')
+    // know we are doing assertions
+    cy.get(".tag-list")
+      .should("contain", "Computer")
+      .should("contain", "JavaScript")
+      .should("contain", "Code Your Future");
+    
   });
 });
