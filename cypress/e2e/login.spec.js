@@ -1,7 +1,12 @@
 /// <reference types="cypress" />
 
 describe("template spec", () => {
+
+  // since we want to intercept tags and tags are the first thing to load when the page is logged in 
+  // we wan to do the interception before the login happen, so we can able to provide our mock response
   beforeEach("First log in the app", () => {
+cy.intercept('GET','https://api.realworld.io/api/tags', {fixture: 'tags.json'})
+
     cy.visit("/login");
     cy.get("[placeholder='Email']").type("adam@hotmail.com");
     cy.get("[placeholder='Password']").type("Kdagaal123");
@@ -25,5 +30,8 @@ describe("template spec", () => {
       expect(xhr.request.body.article.body).to.equal("sheekooy sheeko xariira");
     });
   });
-  // it.only("test", () => {});
+
+  it.only("intercepting with mock response", () => {
+    cy.log('===== log in ======')
+  });
 });
