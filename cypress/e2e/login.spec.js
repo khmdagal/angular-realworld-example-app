@@ -4,7 +4,7 @@ describe("Interceptions", () => {
   // since we want to intercept tags and tags are the first thing to load when the page is logged in
   // we wan to do the interception before the login happen, so we can able to provide our mock response
   beforeEach("First log in the app", () => {
-    cy.intercept("GET", "https://api.realworld.io/api/tags", {
+    cy.intercept({method:"GET", path:"tags"}, {
       fixture: "tags.json",
     });
 
