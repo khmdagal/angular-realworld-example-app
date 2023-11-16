@@ -11,6 +11,8 @@ describe("Interceptions", () => {
       }
     );
 
+
+    // in here we created our own command in the commands.js file to create login command 
     cy.loginToApplication();
   });
 
