@@ -44,34 +44,31 @@ Cypress.Commands.add("loginToApplication", () => {
     },
   };
 
-  cy.request(
-    "POST",
-    "https://api.realworld.io/api/users/login",
-    userCredential
-  ).its("body").then((body) => {
-    // just the above line I add its() method before we used then() and navigate through response.body.user.token
-    // but this time we strait away touch body
-console.log("====>>>",body)
+  cy.request("POST", "https://api.realworld.io/api/users/login", userCredential)
+    .its("body")
+    .then((body) => {
+      // just the above line I add its() method before we used then() and navigate through response.body.user.token
+      // but this time we strait away touch body
+      console.log("====>>>", body);
 
-    const token = body.user.token;
+      const token = body.user.token;
 
-    // now we are going to visit the home page of our application
-    // because we already authenticated in the just the above request we posted
+      // now we are going to visit the home page of our application
+      // because we already authenticated in the just the above request we posted
 
-    cy.visit("/", {
-      // here when we visit the application home page
-      // we provide and option onBeforeLoad event we want to use our window object
-      // and then we want to ge the localStorage from the window
-      // and then to set the item to the jwtToken and the value is the token we store in the token variable in the above
+      // --- we are store the token int cypress alias
+      cy.wrap(token).as("token");
 
-      onBeforeLoad(win) {
-        win.localStorage.setItem("jwtToken", token);
-      },
+      cy.visit("/", {
+        // here when we visit the application home page
+        // we provide and option onBeforeLoad event we want to use our window object
+        // and then we want to ge the localStorage from the window
+        // and then to set the item to the jwtToken and the value is the token we store in the token variable in the above
+
+        // ****** this means our browser is authenticated before we open the home page*****
+        onBeforeLoad(win) {
+          win.localStorage.setItem("jwtToken", token);
+        },
+      });
     });
-  });
-
-  // cy.visit("/login");
-  // cy.get("[placeholder='Email']").type("adam@hotmail.com");
-  // cy.get("[placeholder='Password']").type("Kdagaal123");
-  // cy.get("form").submit();
 });

@@ -11,8 +11,7 @@ describe("Interceptions", () => {
       }
     );
 
-
-    // in here we created our own command in the commands.js file to create login command 
+    // in here we created our own command in the commands.js file to create login command
     cy.loginToApplication();
   });
 
@@ -98,16 +97,9 @@ describe("Interceptions", () => {
     });
   });
 
-  it.only("delete article from global feed", () => {
+  it("delete article from global feed", () => {
     //The aim of this test is to create and delete data just using API calls instead of going the UI which might make you slow
     // now the first thing we need to do is to get the access token by using cypress request method
-
-    const userCredential = {
-      user: {
-        email: "adam@hotmail.com",
-        password: "Kdagaal123",
-      },
-    };
 
     const articleBody = {
       article: {
@@ -118,50 +110,40 @@ describe("Interceptions", () => {
       },
     };
 
-    cy.request(
-      "POST",
-      "https://api.realworld.io/api/users/login",
-      userCredential
-    )
-      .its("body")
-      .then((body) => {
-        // from here we made the request and we got back the response we we saved the "body" variable
-        // now we are going to extract the token from the body variable
- 
-        const token = body.user.token;
-
-        // now the second step we are going to do is to make the second request
-
-        cy.request({
-          url: "https://api.realworld.io/api/articles/",
-          headers: { Authorization: "Token " + token },
-          method: "POST",
-          body: articleBody,
-        }).then((response) => {
-          expect(response.status).to.equal(201);
-        });
-
-        // now here we are perform to delete the article from the global feed. and then validate that deletion.
-
-        //cy.contains("Global Feed").click();
-        cy.get(".article-preview").first().click();
-        cy.contains(articleBody.article.title).click();
-        cy.get(".article-actions").contains("Delete Article").click();
-
-        // from now we want to make a validation if the article is deleted
-        // and we going to make another API request from the list of the article that we don't have the article that we created in the previous steps
-
-        cy.request({
-          url: "https://api.realworld.io/api/articles?limit=10&offset=0",
-          headers: { Authorization: "Token " + token },
-          method: "GET",
-        }).then((response) => {
-          console.log("====>>>>", response);
-
-          expect(response.body.articles[0].title).not.to.equal(
-            articleBody.article.title
-          );
-        });
+    cy.get("@token").then((token) => {
+      // now here we made modification and we don't need the login request we made here
+      // instead we are using the token that we saved the in the command.js file as alias
+      // we also deleted the user credentials from the above in this test same reason, as we moved it in the command.js file
+      cy.request({
+        url: "https://api.realworld.io/api/articles/",
+        headers: { Authorization: "Token " + token },
+        method: "POST",
+        body: articleBody,
+      }).then((response) => {
+        expect(response.status).to.equal(201);
       });
+
+      // now here we are perform to delete the article from the global feed. and then validate that deletion.
+
+      //cy.contains("Global Feed").click();
+      cy.get(".article-preview").first().click();
+      cy.contains(articleBody.article.title).click();
+      cy.get(".article-actions").contains("Delete Article").click();
+
+      // from now we want to make a validation if the article is deleted
+      // and we going to make another API request from the list of the article that we don't have the article that we created in the previous steps
+
+      cy.request({
+        url: "https://api.realworld.io/api/articles?limit=10&offset=0",
+        headers: { Authorization: "Token " + token },
+        method: "GET",
+      }).then((response) => {
+        console.log("====>>>>", response);
+
+        expect(response.body.articles[0].title).not.to.equal(
+          articleBody.article.title
+        );
+      });
+    });
   });
 });
