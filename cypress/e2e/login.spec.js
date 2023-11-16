@@ -4,9 +4,12 @@ describe("Interceptions", () => {
   // since we want to intercept tags and tags are the first thing to load when the page is logged in
   // we wan to do the interception before the login happen, so we can able to provide our mock response
   beforeEach("First log in the app", () => {
-    cy.intercept({method:"GET", path:"tags"}, {
-      fixture: "tags.json",
-    });
+    cy.intercept(
+      { method: "GET", path: "tags" },
+      {
+        fixture: "tags.json",
+      }
+    );
 
     cy.visit("/login");
     cy.get("[placeholder='Email']").type("adam@hotmail.com");
@@ -40,7 +43,7 @@ describe("Interceptions", () => {
       .should("contain", "Code Your Future");
   });
 
-  it.only("verify global feed likes counts", () => {
+  it("verify global feed likes counts", () => {
     //here we are intercepting the both feed your feed and the global one
     //first we are doing your feed intercept
     cy.intercept("GET", "https://api.realworld.io/api/articles/feed*", {
@@ -94,5 +97,50 @@ describe("Interceptions", () => {
         cy.get("app-article-list button").eq(1).click().should("contain", "6");
       });
     });
+  });
+
+  it.only("delete article from global feed", () => {
+    //The aim of this test is to create and delete data just using API calls instead of going the UI which might make you slow
+    // now the first thing we need to do is to get the access token by using cypress request method
+
+    const userCredential = {
+      user: {
+        email: "adam@hotmail.com",
+        password: "Kdagaal123",
+      },
+    };
+
+    const articleBody = {
+      article: {
+        title: "This is new API title222",
+        description: "Post man test",
+        body: "API cypress calls",
+        tagList: [],
+      },
+    };
+
+    cy.request(
+      "POST",
+      "https://api.realworld.io/api/users/login",
+      userCredential
+    )
+      .its("body")
+      .then((body) => {
+        // from here we made the request and we got back the response we we saved the "body" variable
+        // now we are going to extract the token from the body variable
+
+        const token = body.user.token;
+
+        // now the second step we are going to do is to make the second request
+
+        cy.request({
+          url: "https://api.realworld.io/api/articles/",
+          headers: { Authorization: "Token " + token },
+          method: "POST",
+          body: articleBody,
+        }).then((response) => {
+          expect(response.status).to.equal(201);
+        });
+      });
   });
 });
