@@ -11,12 +11,7 @@ describe("Interceptions", () => {
       }
     );
 
-cy.loginToApplication()
-
-    // cy.visit("/login");
-    // cy.get("[placeholder='Email']").type("adam@hotmail.com");
-    // cy.get("[placeholder='Password']").type("Kdagaal123");
-    // cy.get("form").submit();
+    cy.loginToApplication();
   });
 
   it("Create article", () => {
@@ -148,9 +143,8 @@ cy.loginToApplication()
 
         //cy.contains("Global Feed").click();
         cy.get(".article-preview").first().click();
-        cy.contains(articleBody.article.title).click()
+        cy.contains(articleBody.article.title).click();
         cy.get(".article-actions").contains("Delete Article").click();
-
 
         // from now we want to make a validation if the article is deleted
         // and we going to make another API request from the list of the article that we don't have the article that we created in the previous steps
@@ -159,12 +153,13 @@ cy.loginToApplication()
           url: "https://api.realworld.io/api/articles?limit=10&offset=0",
           headers: { Authorization: "Token " + token },
           method: "GET",
-        }).then(response => {
-          console.log("====>>>>",response)
-          
-          expect(response.body.articles[0].title).not.to.equal(articleBody.article.title);
-        })
+        }).then((response) => {
+          console.log("====>>>>", response);
 
+          expect(response.body.articles[0].title).not.to.equal(
+            articleBody.article.title
+          );
+        });
       });
   });
 });
