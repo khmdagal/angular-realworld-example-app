@@ -48,11 +48,12 @@ Cypress.Commands.add("loginToApplication", () => {
     "POST",
     "https://api.realworld.io/api/users/login",
     userCredential
-  ).then((response) => {
+  ).its("body").then((body) => {
+    // just the above line I add its() method before we used then() and navigate through response.body.user.token
+    // but this time we strait away touch body
+console.log("====>>>",body)
 
-console.log("====>>>",response)
-
-    const token = response.body.user.token;
+    const token = body.user.token;
 
     // now we are going to visit the home page of our application
     // because we already authenticated in the just the above request we posted
