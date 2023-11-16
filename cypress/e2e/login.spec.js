@@ -127,7 +127,7 @@ describe("Interceptions", () => {
       .then((body) => {
         // from here we made the request and we got back the response we we saved the "body" variable
         // now we are going to extract the token from the body variable
-
+ 
         const token = body.user.token;
 
         // now the second step we are going to do is to make the second request

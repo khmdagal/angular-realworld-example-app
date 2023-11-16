@@ -37,8 +37,40 @@
 // }
 
 Cypress.Commands.add("loginToApplication", () => {
-  cy.visit("/login");
-  cy.get("[placeholder='Email']").type("adam@hotmail.com");
-  cy.get("[placeholder='Password']").type("Kdagaal123");
-  cy.get("form").submit();
+  const userCredential = {
+    user: {
+      email: "adam@hotmail.com",
+      password: "Kdagaal123",
+    },
+  };
+
+  cy.request(
+    "POST",
+    "https://api.realworld.io/api/users/login",
+    userCredential
+  ).then((response) => {
+
+console.log("====>>>",response)
+
+    const token = response.body.user.token;
+
+    // now we are going to visit the home page of our application
+    // because we already authenticated in the just the above request we posted
+
+    cy.visit("/", {
+      // here when we visit the application home page
+      // we provide and option onBeforeLoad event we want to use our window object
+      // and then we want to ge the localStorage from the window
+      // and then to set the item to the jwtToken and the value is the token we store in the token variable in the above
+
+      onBeforeLoad(win) {
+        win.localStorage.setItem("jwtToken", token);
+      },
+    });
+  });
+
+  // cy.visit("/login");
+  // cy.get("[placeholder='Email']").type("adam@hotmail.com");
+  // cy.get("[placeholder='Password']").type("Kdagaal123");
+  // cy.get("form").submit();
 });
